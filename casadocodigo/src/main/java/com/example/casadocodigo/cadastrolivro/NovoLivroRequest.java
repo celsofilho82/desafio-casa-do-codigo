@@ -62,6 +62,14 @@ public class NovoLivroRequest {
 		this.idAutor = idAutor;
 	}
 
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public String getIsbn() {
+		return isbn;
+	}
+
 	public Livro toModel(AutorRepository autorRepository, CategoriaRepository categoriaRepository) {
 		Optional<Autor> autor = autorRepository.findById(idAutor);
 		Optional<Categoria> categoria = categoriaRepository.findById(idCategoria);

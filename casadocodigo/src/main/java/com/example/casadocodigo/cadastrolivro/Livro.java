@@ -43,6 +43,10 @@ public class Livro {
 	@ManyToOne
 	private Categoria categoria;
 
+	@Deprecated
+	public Livro() {
+	}
+
 	public Livro(@NotBlank String titulo, @NotBlank @Size(max = 500) String resumo, String sumario,
 			@NotNull @Min(20) BigDecimal preco, @NotNull @Min(100) Integer paginas, @NotBlank String isbn,
 			@Future LocalDate dataPublicacao, Autor autor, Categoria categoria) {

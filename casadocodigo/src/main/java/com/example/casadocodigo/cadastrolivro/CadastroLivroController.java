@@ -4,6 +4,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,17 @@ public class CadastroLivroController {
 
 	@Autowired
 	private LivroRepository livroRepository;
+
+	@Autowired
+	private TituloLivroDeveSerUnicoValidator tituloLivroDeveSerUnicoValidator;
+
+	@Autowired
+	private IsbnLivroDeveSerUnicoValidator isbnLivroDeveSerUnicoValidator;
+
+	@InitBinder
+	public void init(WebDataBinder binder) {
+		binder.addValidators(tituloLivroDeveSerUnicoValidator, isbnLivroDeveSerUnicoValidator);
+	}
 
 	@PostMapping
 	public ResponseEntity<Livro> cadastrarLivro(@RequestBody @Valid NovoLivroRequest request) {
