@@ -31,7 +31,11 @@ public class NovoAutorRequest {
 	}
 
 	public Autor toModel() {
-		return new Autor(this.nome, this.email, this.descricao, this.dataCadastro);
+		return new Autor(this.nome, this.getEmail(), this.descricao, this.dataCadastro);
+	}
+
+	public String getEmail() {
+		return email;
 	}
 
 }
