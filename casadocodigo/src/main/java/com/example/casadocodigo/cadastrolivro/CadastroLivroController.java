@@ -1,10 +1,13 @@
 package com.example.casadocodigo.cadastrolivro;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.casadocodigo.cadastroautor.AutorRepository;
 import com.example.casadocodigo.cadastrocategoria.CategoriaRepository;
+import com.example.casadocodigo.detalheslivro.LivroResponse;
 
 @RestController
 @RequestMapping("/livros")
@@ -45,5 +49,12 @@ public class CadastroLivroController {
 		livroRepository.save(livro);
 
 		return ResponseEntity.ok(livro);
+	}
+
+	@GetMapping
+	public List<LivroResponse> listarLivros() {
+		List<Livro> livros = livroRepository.findAll();
+		
+		return LivroResponse.convert(livros);
 	}
 }
