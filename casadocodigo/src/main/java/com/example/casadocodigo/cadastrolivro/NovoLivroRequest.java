@@ -2,8 +2,8 @@ package com.example.casadocodigo.cadastrolivro;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 
+import javax.persistence.EntityManager;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -13,9 +13,7 @@ import javax.validation.constraints.Size;
 import org.springframework.util.Assert;
 
 import com.example.casadocodigo.cadastroautor.Autor;
-import com.example.casadocodigo.cadastroautor.AutorRepository;
 import com.example.casadocodigo.cadastrocategoria.Categoria;
-import com.example.casadocodigo.cadastrocategoria.CategoriaRepository;
 
 public class NovoLivroRequest {
 
@@ -70,15 +68,15 @@ public class NovoLivroRequest {
 		return isbn;
 	}
 
-	public Livro toModel(AutorRepository autorRepository, CategoriaRepository categoriaRepository) {
-		Optional<Autor> autor = autorRepository.findById(idAutor);
-		Optional<Categoria> categoria = categoriaRepository.findById(idCategoria);
+	public Livro toModel(EntityManager manager) {
+		Autor autor = manager.find(Autor.class, idAutor);
+		Categoria categoria = manager.find(Categoria.class, idCategoria);
 
-		Assert.state(autor.isPresent(), "O Autor informado não está cadastrado");
-		Assert.state(categoria.isPresent(), "A categoria informada não está cadstrada");
+		Assert.state(autor != null, "O Autor informado não está cadastrado");
+		Assert.state(categoria != null, "A categoria informada não está cadstrada");
 
 		return new Livro(this.titulo, this.resumo, this.sumario, this.preco, this.paginas, this.isbn,
-				this.dataPublicacao, autor.get(), categoria.get());
+				this.dataPublicacao, autor, categoria);
 	}
 
 }

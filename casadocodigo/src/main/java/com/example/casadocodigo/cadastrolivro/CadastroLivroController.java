@@ -3,6 +3,7 @@ package com.example.casadocodigo.cadastrolivro;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.casadocodigo.cadastroautor.AutorRepository;
-import com.example.casadocodigo.cadastrocategoria.CategoriaRepository;
 import com.example.casadocodigo.detalheslivro.LivroDetalhes;
 import com.example.casadocodigo.detalheslivro.LivroResponse;
 
 @RestController
 @RequestMapping("/livros")
 public class CadastroLivroController {
-
+	
 	@Autowired
-	private AutorRepository autorRepository;
-
-	@Autowired
-	private CategoriaRepository categoriaRepository;
+	private EntityManager manager;
 
 	@Autowired
 	private LivroRepository livroRepository;
@@ -48,7 +44,7 @@ public class CadastroLivroController {
 	@PostMapping
 	public ResponseEntity<Livro> cadastrarLivro(@RequestBody @Valid NovoLivroRequest request) {
 
-		Livro livro = request.toModel(autorRepository, categoriaRepository);
+		Livro livro = request.toModel(manager);
 		livroRepository.save(livro);
 
 		return ResponseEntity.ok(livro);
