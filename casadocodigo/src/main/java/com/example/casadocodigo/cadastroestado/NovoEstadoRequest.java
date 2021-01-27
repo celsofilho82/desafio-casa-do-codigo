@@ -27,7 +27,11 @@ public class NovoEstadoRequest {
 		Optional<Pais> possivelPais = paisRepository.findById(idPais);
 		Assert.state(possivelPais != null, "O id do País informado não foi encontrado");
 
-		return new Estado(this.nome, possivelPais.get());
+		return new Estado(this.getNome(), possivelPais.get());
+	}
+
+	public String getNome() {
+		return nome;
 	}
 
 }
