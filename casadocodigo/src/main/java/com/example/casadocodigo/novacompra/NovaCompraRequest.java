@@ -1,5 +1,6 @@
 package com.example.casadocodigo.novacompra;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.constraints.Email;
@@ -76,26 +77,50 @@ public class NovaCompraRequest {
 		this.idEstado = idEstado;
 	}
 
+	public String getDocumento() {
+		return documento;
+	}
+
 	public Compra toModel(PaisRepository paisRepository, EstadoRepository estadoRepository) {
 		Optional<Pais> pais = paisRepository.findById(idPais);
 		Assert.state(pais.isPresent(), "O Pais com id: " + this.idPais + " não está cadastrado");
-		
-		Optional<Estado> estado = estadoRepository.findById(idEstado);
-		Assert.state(estado.isPresent(), "O Estdo com id: " + this.idEstado + " não está cadastrado");
-		
+
+		Estado estado = setEstado(estadoRepository);
+
+		paisComEstadoCadastradoDeveInformarEstado(estadoRepository);
+
+		verificaSeEstadoPertenceAoPais(estadoRepository, estado);
+
 		return new Compra(this.email, this.nome, this.sobrenome, this.documento, this.endereco, this.complemento,
-				this.cidade, pais.get(), estado.get(), this.telefone, this.cep);
+				this.cidade, pais.get(), estado, this.telefone, this.cep);
 	}
 
-	@Override
-	public String toString() {
-		return "NovaCompraRequest [email=" + email + ", nome=" + nome + ", sobrenome=" + sobrenome + ", documento="
-				+ getDocumento() + ", endereco=" + endereco + ", complemento=" + complemento + ", cidade=" + cidade
-				+ ", idPais=" + idPais + ", idEstado=" + idEstado + ", telefone=" + telefone + ", cep=" + cep + "]";
+	private void verificaSeEstadoPertenceAoPais(EstadoRepository estadoRepository, Estado estado) {
+		if (estado.equals(null)) {
+			return;
+		}
+
+		List<Estado> listaEstadosDoPais = estadoRepository.findByPaisId(this.idPais);
+		Assert.isTrue(listaEstadosDoPais.contains(estado), "O Estado informado não pertence a esse País");
+
 	}
 
-	public String getDocumento() {
-		return documento;
+	private void paisComEstadoCadastradoDeveInformarEstado(EstadoRepository estadoRepository) {
+		List<Estado> listaEstadosDoPais = estadoRepository.findByPaisId(this.idPais);
+		if (this.idEstado == null) {
+			Assert.isTrue(listaEstadosDoPais.isEmpty(),
+					"O País possui Estados cadastrados. Um estado precisa ser selecionado");
+		}
+	}
+
+	private Estado setEstado(EstadoRepository estadoRepository) {
+		if (this.idEstado == null) {
+			return null;
+		}
+		Optional<Estado> estado = estadoRepository.findById(this.idEstado);
+		Assert.state(estado.isPresent(), "O Estado com id: " + this.idEstado + " não está cadastrado");
+
+		return estado.get();
 	}
 
 }
