@@ -1,5 +1,6 @@
 package com.example.casadocodigo.cadastrolivro;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.casadocodigo.detalheslivro.LivroDetalhes;
 import com.example.casadocodigo.detalheslivro.LivroResponse;
@@ -23,7 +25,7 @@ import com.example.casadocodigo.detalheslivro.LivroResponse;
 @RestController
 @RequestMapping("/livros")
 public class CadastroLivroController {
-	
+
 	@Autowired
 	private EntityManager manager;
 
@@ -42,12 +44,14 @@ public class CadastroLivroController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Livro> cadastrarLivro(@RequestBody @Valid NovoLivroRequest request) {
+	public ResponseEntity<Livro> cadastrarLivro(@RequestBody @Valid NovoLivroRequest request,
+			UriComponentsBuilder uriBuilder) {
 
 		Livro livro = request.toModel(manager);
 		livroRepository.save(livro);
+		URI uri = uriBuilder.path("/livros/{id}").buildAndExpand(livro.getId()).toUri();
 
-		return ResponseEntity.ok(livro);
+		return ResponseEntity.created(uri).body(livro);
 	}
 
 	@GetMapping
